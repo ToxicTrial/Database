@@ -2,6 +2,7 @@ import psycopg2
 from tkinter import messagebox
 
 
+
 def create_connection(db_name, db_user, db_password, db_host, db_port):
     connection = None
     try:
@@ -49,7 +50,7 @@ def check_columns(connection, table_name):
         return None
 
 
-def add_entry(connection, table_name, data):
+def add_entry(connection, window, table_name, data):
     try:
         with connection.cursor() as cursor:
             user_records = ", ".join(["%s"] * len(data))
@@ -58,11 +59,11 @@ def add_entry(connection, table_name, data):
             cursor.execute(insert_query, data)
             return None
     except Exception as e:
-        messagebox.showerror("Ошибка", f"{e}")
+        messagebox.showerror("Ошибка", f"{e}", parent=window)
         return e
 
 
-def update_entry(connection, table_name, row, uid):
+def update_entry(connection, window, table_name, row, uid):
     try:
         with connection.cursor() as cursor:
             column_names = check_columns(connection, table_name)
@@ -75,19 +76,14 @@ def update_entry(connection, table_name, row, uid):
             cursor.execute(update_description, (*update_values, uid))
         return
     except Exception as e:
-        messagebox.showerror("Ошибка", f"{e}")
+        messagebox.showerror("Ошибка", f"{e}", parent=window)
         return e
 
 
-def delete_entry(connection, table_name, row):
+def delete_entry(connection, window, table_name, row):
     try:
         with connection.cursor() as cursor:
             column_names = check_columns(connection, table_name)
             cursor.execute(f"DELETE FROM {table_name} WHERE {column_names[0]} = {row[0]}")
     except Exception as e:
-        messagebox.showerror("Ошибка", f"{e}")
-
-
-connect = create_connection("railway_db", "postgres", "postgresql", "localhost", "5432")
-users = [(1, "male", "Denmark")]
-update_entry(connect, "station_employees", users, 40)
+        messagebox.showerror("Ошибка", f"{e}", parent=window)

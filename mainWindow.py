@@ -1,5 +1,6 @@
 import tkinter as tk
 import dbconnect
+import Russian as ru
 from tkinter import ttk, messagebox
 
 
@@ -7,7 +8,7 @@ class MainWindow(tk.Tk):
     def __init__(self):
         super().__init__()
         self.title('Техническое обслуживание поездов')
-        self.geometry("700x500")
+        self.geometry("300x500")
         self.update_idletasks()
         x = (self.winfo_screenwidth() - self.winfo_width()) // 2
         y = (self.winfo_screenheight() - self.winfo_height()) // 2
@@ -33,15 +34,10 @@ class MainWindow(tk.Tk):
                         "body_parts", "chassis_parts", "shock_traction_device_parts",
                         "braking_equipment_parts"
                         ]
-        texts = [
-                        "Техническое обслуживание", "Сотрудники станции", "Вагоны",
-                        "Детали кузова", "Детали ходовой части", "Детали ударно-тягового устройства",
-                        "Детали тормозного оборудования"
-                        ]
 
         for index, text in enumerate(table_texts):
-            ttk.Button(text=texts[index], width=100,
-                       command=lambda t=text: open_or_show_window(t)).pack(expand=True, ipady= 10)
+            ttk.Button(text=ru.texts[index], width=30,
+                       command=lambda t=text: open_or_show_window(t)).pack(expand=True, ipady= 7)
 
 
 class Window(tk.Toplevel):
@@ -62,8 +58,9 @@ class Window(tk.Toplevel):
         self.deleteButton.pack(side=tk.LEFT, expand=True, fill=tk.X, ipady=7)
 
         self.table = ttk.Treeview(self, columns=self.columns_names, show='headings')
-        for name in self.columns_names:
-            self.table.heading(name, text=name)
+
+        for index, name in enumerate(self.columns_names):
+            self.table.heading(name, text=ru.columns_names[table_name][index])
 
         self.table.pack(expand=True, fill=tk.BOTH)
 
@@ -102,8 +99,7 @@ class Window(tk.Toplevel):
         column_count = len(self.table["columns"])
         self.entries = []
         for i in range(column_count):
-            column_name = self.table["columns"][i]
-            label = tk.Label(self.edit_dialog, text=f"Введите значение для {column_name}:")
+            label = tk.Label(self.edit_dialog, text=f"{ru.columns_names[self.table_name][i]}:")
             label.grid(row=i, column=0, padx=5, pady=5)
             entry = tk.Entry(self.edit_dialog)
             entry.grid(row=i, column=1, padx=5, pady=5)
@@ -117,7 +113,7 @@ class Window(tk.Toplevel):
     def save_changes(self, uid):
         new_values = [entry.get() for entry in self.entries]
         data = [tuple(new_values)]
-        exception = dbconnect.update_entry(self.connection, self.table_name, data, uid)
+        exception = dbconnect.update_entry(self.connection, self.edit_dialog, self.table_name, data, uid)
         if exception == None:
             self.table.item(self.current_item, values=new_values)
             self.edit_dialog.destroy()
@@ -133,8 +129,7 @@ class Window(tk.Toplevel):
             column_count = len(self.table["columns"])
             self.entries = []
             for i in range(column_count):
-                column_name = self.table["columns"][i]
-                label = tk.Label(self.add_dialog, text=f"Введите значение для {column_name}:")
+                label = tk.Label(self.add_dialog, text=f"{ru.columns_names[self.table_name][i]}:")
                 label.grid(row=i, column=0, padx=5, pady=5)
                 entry = tk.Entry(self.add_dialog)
                 entry.grid(row=i, column=1, padx=5, pady=5)
@@ -155,7 +150,7 @@ class Window(tk.Toplevel):
         try:
             new_values = [entry.get() for entry in entries]
             data = [tuple(new_values)]
-            exception = dbconnect.add_entry(self.connection, self.table_name, data)
+            exception = dbconnect.add_entry(self.connection, add_dialog, self.table_name, data)
             if exception == None:
                 self.table.insert('', 'end', values=new_values)
                 add_dialog.destroy()
@@ -175,6 +170,19 @@ class Window(tk.Toplevel):
                                               f"Вы уверены, что хотите удалить запись {item_text}?")
                 if confirm:
                     self.table.delete(selected_item)
-                    dbconnect.delete_entry(self.connection, self.table_name, item_text)
+                    dbconnect.delete_entry(self.connection, confirm, self.table_name, item_text)
         except Exception as e:
             print(f"The error '{e}' occurred")
+
+    # def check_value(self, values):
+    #     for index, value in enumerate(values):
+    #         try:
+    #             value = int(value)
+    #         except ValueError as e:
+    #             pass
+    #         print(value)
+    #         print(ru.datatypes[self.columns_names[index]])
+    #         if not isinstance(value, ru.datatypes[self.columns_names[index]]):
+    #             print(isinstance(value, ru.datatypes[self.columns_names[index]]))
+    #             raise ValueError(f"Неверный тип данных для столбца '{self.columns_names[index]}'")
+
