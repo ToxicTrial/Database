@@ -1,4 +1,5 @@
 import psycopg2
+from tkinter import messagebox
 
 
 def create_connection(db_name, db_user, db_password, db_host, db_port):
@@ -14,7 +15,7 @@ def create_connection(db_name, db_user, db_password, db_host, db_port):
         print("Connection to PostgreSQL DB successful")
         connection.autocommit = True
     except Exception as e:
-        print(f"The error '{e}' occurred")
+        messagebox.showerror("Ошибка", f"{e}")
     return connection
 
 
@@ -27,7 +28,7 @@ def read_entry(connection, table_name):
             result = cursor.fetchall()
         return result
     except Exception as e:
-        print(f"The error '{e}' occurred")
+        messagebox.showerror("Ошибка", f"{e}")
 
 
 def check_columns(connection, table_name):
@@ -44,7 +45,7 @@ def check_columns(connection, table_name):
             column_names = [col[0] for col in columns]
             return column_names
     except Exception as e:
-        print(f"The error '{e}' occurred")
+        messagebox.showerror("Ошибка", f"{e}")
         return None
 
 
@@ -57,7 +58,7 @@ def add_entry(connection, table_name, data):
             cursor.execute(insert_query, data)
             return None
     except Exception as e:
-        print(f"The error '{e}' occurred")
+        messagebox.showerror("Ошибка", f"{e}")
         return e
 
 
@@ -74,7 +75,7 @@ def update_entry(connection, table_name, row, uid):
             cursor.execute(update_description, (*update_values, uid))
         return
     except Exception as e:
-        print(f"The error '{e}' occurred")
+        messagebox.showerror("Ошибка", f"{e}")
         return e
 
 
@@ -84,7 +85,7 @@ def delete_entry(connection, table_name, row):
             column_names = check_columns(connection, table_name)
             cursor.execute(f"DELETE FROM {table_name} WHERE {column_names[0]} = {row[0]}")
     except Exception as e:
-        print(f"The error '{e}' occurred")
+        messagebox.showerror("Ошибка", f"{e}")
 
 
 connect = create_connection("railway_db", "postgres", "postgresql", "localhost", "5432")

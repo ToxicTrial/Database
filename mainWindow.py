@@ -51,13 +51,15 @@ class Window(tk.Toplevel):
         self.table_name = table_name
         self.columns_names = dbconnect.check_columns(self.connection, table_name)
 
-        self.addButton = ttk.Button(self, text='Добавить строчку', command=lambda: self.add_row())
-        self.deleteButton = ttk.Button(self, text="Удалить строчку", command=lambda: self.delete_row())
-        self.changeButton = ttk.Button(self, text="Редактировать", command=lambda: self.edit_row())
+        self.button_frame = tk.Frame(self)
+        self.button_frame.pack(side=tk.TOP, fill=tk.X)
+        self.addButton = ttk.Button(self.button_frame, width=20, text='Добавить строчку', command=lambda: self.add_row())
+        self.deleteButton = ttk.Button(self.button_frame, width=20, text="Удалить строчку", command=lambda: self.delete_row())
+        self.changeButton = ttk.Button(self.button_frame, width=20, text="Редактировать", command=lambda: self.edit_row())
 
-        self.addButton.pack(expand=True, pady=0)
-        self.changeButton.pack(expand=True, pady=0)
-        self.deleteButton.pack(expand=True, pady=0)
+        self.addButton.pack(side=tk.LEFT, expand=True, fill=tk.X, ipady=7)
+        self.changeButton.pack(side=tk.LEFT, expand=True, fill=tk.X, ipady=7)
+        self.deleteButton.pack(side=tk.LEFT, expand=True, fill=tk.X, ipady=7)
 
         self.table = ttk.Treeview(self, columns=self.columns_names, show='headings')
         for name in self.columns_names:
@@ -84,7 +86,7 @@ class Window(tk.Toplevel):
     def edit_row(self):
         highlight = self.table.focus()
         if not highlight:
-            print("No item selected")
+            messagebox.showinfo("Предупреждение", f"Нет выделенного элемента")
             return
 
         data = self.table.item(highlight, 'values')
@@ -118,8 +120,8 @@ class Window(tk.Toplevel):
         exception = dbconnect.update_entry(self.connection, self.table_name, data, uid)
         if exception == None:
             self.table.item(self.current_item, values=new_values)
-        self.edit_dialog.destroy()
-        self.edit_dialog = None
+            self.edit_dialog.destroy()
+            self.edit_dialog = None
 
     def add_row(self):
         if not hasattr(self, 'add_dialog'):
@@ -156,8 +158,8 @@ class Window(tk.Toplevel):
             exception = dbconnect.add_entry(self.connection, self.table_name, data)
             if exception == None:
                 self.table.insert('', 'end', values=new_values)
-            add_dialog.destroy()
-            del self.add_dialog
+                add_dialog.destroy()
+                del self.add_dialog
         except Exception as e:
             print(f"The error '{e}' occurred")
 
@@ -165,7 +167,7 @@ class Window(tk.Toplevel):
         try:
             selected_item = self.table.focus()
             if not selected_item:
-                print("No item selected")
+                messagebox.showinfo("Предупреждение", f"Нет выделенного элемента")
                 return
             if selected_item:
                 item_text = self.table.item(selected_item, 'values')
