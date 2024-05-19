@@ -20,7 +20,7 @@ class MainWindow(tk.Tk):
         def open_or_show_window(window_title):
             if window_title not in self.created_windows:
                 new_window = Window(self.connect, window_title)
-                new_window.title(window_title)
+                new_window.title(ru.window_name[window_title])
                 self.created_windows[window_title] = new_window
                 new_window.protocol("WM_DELETE_WINDOW", lambda: on_window_close(window_title))
             else:
@@ -92,7 +92,7 @@ class Window(tk.Toplevel):
         if self.edit_dialog is not None:
             self.edit_dialog.destroy()
         self.edit_dialog = tk.Toplevel(self)
-        self.edit_dialog.title("Edit")
+        self.edit_dialog.title("Редактировать")
         x = self.winfo_x() + (self.winfo_width() // 2) - (self.edit_dialog.winfo_reqwidth() // 2) - 100
         y = self.winfo_y() + (self.winfo_height() // 2) - (self.edit_dialog.winfo_reqheight() // 2)
         self.edit_dialog.geometry("+{}+{}".format(x, y))
@@ -122,7 +122,7 @@ class Window(tk.Toplevel):
     def add_row(self):
         if not hasattr(self, 'add_dialog'):
             self.add_dialog = tk.Toplevel(self)
-            self.add_dialog.title("Add")
+            self.add_dialog.title("Добавить")
             x = self.winfo_x() + (self.winfo_width() // 2) - (self.add_dialog.winfo_reqwidth() // 2) - 100
             y = self.winfo_y() + (self.winfo_height() // 2) - (self.add_dialog.winfo_reqheight() // 2)
             self.add_dialog.geometry("+{}+{}".format(x, y))

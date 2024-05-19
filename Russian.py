@@ -35,6 +35,16 @@ texts = [
     "Детали тормозного оборудования"
 ]
 
+window_name = {
+    "maintenances": "Техническое обслуживание",
+    "station_employees": "Сотрудники станции",
+    "railroad_cars" : "Вагоны",
+    "body_parts": "Детали кузова",
+    "chassis_parts": "Детали ходовой части",
+    "shock_traction_device_parts": "Детали ударно-тягового устройства",
+    "braking_equipment_parts": "Детали тормозного оборудования"
+}
+
 datatypes = {
     "id": int,
     "date": str,
